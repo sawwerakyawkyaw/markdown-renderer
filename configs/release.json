@@ -1,0 +1,22 @@
+{
+  "contributions": [
+    {
+      "id": "markdown-renderer",
+      "type": "ms.vss-code-web.content-renderer",
+      "targets": [
+        "ms.vss-code-web.content-renderer-collection"
+      ],
+      "properties": {
+        "uri": "dist/index.html",
+        "fileExtensions": [
+          "md"
+        ],
+        "mimeTypes": [
+          "text/html"
+        ],
+        "defaultBehavior": "showRenderedContent",
+        "registeredObjectId": "markdown_preview_renderer"
+      }
+    }
+  ]
+}

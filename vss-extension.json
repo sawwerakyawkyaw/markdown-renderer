@@ -1,0 +1,48 @@
+{
+  "manifestVersion": 1,
+  "id": "azure-devops-markdown-preview",
+  "publisher": "wera-kyaw-kyaw",
+  "version": "1.0.1",
+  "name": "Markdown Preview",
+  "description": "Advanced Markdown Preview with support for YAML front matter, Mermaid diagrams, KaTeX math, footnotes, syntax highlighting, and more",
+  "public": false,
+  "categories": [
+    "Azure Repos"
+  ],
+  "tags": [
+    "markdown",
+    "preview",
+    "viewer",
+    "mermaid",
+    "katex",
+    "math",
+    "diagrams",
+    "yaml",
+    "frontmatter",
+    "syntax-highlighting",
+    "footnotes"
+  ],
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "icons": {
+    "default": "doc/icon.png"
+  },
+  "files": [
+    {
+      "path": "dist",
+      "addressable": true
+    },
+    {
+      "path": "doc",
+      "addressable": true
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "doc/overview.md"
+    }
+  }
+}

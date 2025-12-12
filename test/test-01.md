@@ -1,3 +1,21 @@
+---
+title: My First Blog Post
+author: Jane Doe
+date: 2025-12-11
+tags: [yaml, example, tutorial]
+layout: article
+template: api-doc.html # Custom template setting
+version: 1.2 # Custom version number
+description: | # Multi-line description
+  This article explains how to use YAML front matter
+  for adding structured data to your documents.
+authors: # Array of author objects
+  - name: Alice
+    affiliation: Tech Co
+  - name: Bob
+    affiliation: Data Corp
+---
+
 An h1 header
 ============
 
@@ -36,6 +54,18 @@ timeline
          : Google
     2005 : YouTube
     2006 : Twitter
+```
+
+```mermaid
+gatt
+    title A Gantt Diagram
+    dateFormat YYYY-MM-DD
+    section Section
+        A task          :a1, 2014-01-01, 30d
+        Another task    :after a1, 20d
+    section Another
+        Task in Another :2014-01-12, 12d
+        another task    :24d
 ```
 
 An h2 header
@@ -195,3 +225,58 @@ $$I = \int \rho R^{2} dV$$
 
 And note that you can backslash-escape any punctuation characters
 which you wish to be displayed literally, ex.: \`foo\`, \*bar\*, etc.
+
+### Subscript and Superscript Examples
+
+Chemical formulas with subscript: H~2~O, CO~2~, C~6~H~12~O~6~
+
+Mathematical expressions with superscript: X^2^, E=mc^2^, a^n^+b^n^=c^n^
+
+Combined usage: The equation x^2^ + y^2^ = r^2^ describes a circle.
+
+### KaTeX Math Rendering Examples
+
+Inline math with KaTeX: The quadratic formula is $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$ which solves $ax^2 + bx + c = 0$.
+
+More inline examples: Einstein's famous equation $E = mc^2$, and the Pythagorean theorem $a^2 + b^2 = c^2$.
+
+Display math (block):
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
+
+Complex equation:
+
+$$
+f(x) = \int_{-\infty}^\infty \hat{f}(\xi) e^{2\pi i \xi x} d\xi
+$$
+
+Matrix example:
+
+$$
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+$$
+
+Sum notation:
+
+$$
+\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}
+$$
+
+### Footnote Examples
+
+Here's a sentence with a footnote.[^1] You can also use named footnotes[^2] for better organization.
+
+Multiple references to the same footnote are supported.[^1]
+
+Footnotes can contain **formatted** text and `code`.[^3]
+
+[^1]: This is the first footnote with simple text.
+
+[^2]: This is a named footnote. You can use any identifier you want.
+
+[^3]: This footnote contains **bold text**, *italic text*, and `inline code`. You can also include [links](https://example.com) in footnotes!

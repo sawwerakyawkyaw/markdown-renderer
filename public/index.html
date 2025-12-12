@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Preview</title>
   <style>
     body {
-      max-width: 980px;
+      max-width: 1000px;
       margin: 0 auto;
       padding: 45px;
       background-color: #f6f8fa;
+      overflow-y: scroll;
+      overflow-x: scroll;
     }
+
     .markdown-body {
       box-sizing: border-box;
       min-width: 200px;
-      max-width: 980px;
+      max-width: 1000px;
       margin: 0 auto;
       padding: 45px;
       background-color: white;
       border: 1px solid #d0d7de;
       border-radius: 6px;
     }
+
+    #spinner {
+      display: none;
+    }
   </style>
 </head>
-<body>
-  <div id="markdown-preview" class="markdown-body">Loading...</div>
 
-  <script src="/dist/bundle.js"></script>
+<body>
+  <div id="viewer-content-display">
+    <div id="markdown-preview" class="markdown-body">Loading...</div>
+    <div id="spinner"></div>
+  </div>
 </body>
+
 </html>

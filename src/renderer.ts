@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';
 import markedFootnote from 'marked-footnote';
@@ -215,17 +216,18 @@ export default class MarkdownRenderer {
     // Get all unique keys from all objects
     const keys = [...new Set(array.flatMap(obj => Object.keys(obj)))];
 
-    let html = '<table>\n<thead>\n<tr>';
+    let html = '<table style="width: 100%;">\n<thead>\n<tr>';
 
-    // Table headers
-    for (const key of keys) {
-      html += `<th>${this.escapeHtml(key)}</th>`;
+    // Table headers - repeat for each object
+    for (let i = 0; i < array.length; i++) {
+      for (const key of keys) {
+        html += `<th>${this.escapeHtml(key)}</th>`;
+      }
     }
-    html += '</tr>\n</thead>\n<tbody>\n';
+    html += '</tr>\n</thead>\n<tbody>\n<tr>';
 
-    // Table rows
+    // Table data - one cell for each value
     for (const obj of array) {
-      html += '<tr>';
       for (const key of keys) {
         const value = obj[key];
         if (value == null) {
@@ -236,10 +238,9 @@ export default class MarkdownRenderer {
           html += `<td>${this.escapeHtml(String(value))}</td>`;
         }
       }
-      html += '</tr>\n';
     }
 
-    html += '</tbody>\n</table>';
+    html += '</tr>\n</tbody>\n</table>';
     return html;
   }
 
@@ -359,22 +360,4 @@ export default class MarkdownRenderer {
     }
   }
 
-  /**
-   * Load markdown from server and render it
-   * @param {string} filename - The markdown file to load
-   * @param {string} containerId - The ID of the container element
-   */
-  async loadAndRender(filename, containerId = 'markdown-preview') {
-    try {
-      const response = await fetch(`/api/markdown/${filename}`);
-      const data = await response.json();
-      await this.renderContent(data.content, containerId);
-    } catch (error) {
-      console.error('Error loading markdown file:', error);
-      const container = document.getElementById(containerId);
-      if (container) {
-        container.innerHTML = '<p>Error loading markdown file</p>';
-      }
-    }
-  }
 }
