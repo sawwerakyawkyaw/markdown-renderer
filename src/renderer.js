@@ -1,5 +1,6 @@
 import { marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';
+import markedFootnote from 'marked-footnote';
 import hljs from 'highlight.js';
 import mermaid from 'mermaid';
 import DOMPurify from 'dompurify';
@@ -19,6 +20,9 @@ export default class MarkdownRenderer {
         return hljs.highlight(code, { language }).value;
       }
     }));
+
+    // Add footnote support
+    marked.use(markedFootnote());
 
     // Add subscript and superscript extensions
     marked.use({
