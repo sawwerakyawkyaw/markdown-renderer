@@ -18,6 +18,48 @@ export default class MarkdownRenderer {
       }
     }));
 
+    // Add subscript and superscript extensions
+    marked.use({
+      extensions: [
+        {
+          name: 'subscript',
+          level: 'inline',
+          start(src) { return src.indexOf('~'); },
+          tokenizer(src) {
+            const match = src.match(/^~([^~\s]+)~/);
+            if (match) {
+              return {
+                type: 'subscript',
+                raw: match[0],
+                text: match[1]
+              };
+            }
+          },
+          renderer(token) {
+            return `<sub>${token.text}</sub>`;
+          }
+        },
+        {
+          name: 'superscript',
+          level: 'inline',
+          start(src) { return src.indexOf('^'); },
+          tokenizer(src) {
+            const match = src.match(/^\^([^^^\s]+)\^/);
+            if (match) {
+              return {
+                type: 'superscript',
+                raw: match[0],
+                text: match[1]
+              };
+            }
+          },
+          renderer(token) {
+            return `<sup>${token.text}</sup>`;
+          }
+        }
+      ]
+    });
+
     // Initialize mermaid
     mermaid.initialize({ startOnLoad: false });
   }
