@@ -3,6 +3,7 @@ import { markedHighlight } from 'marked-highlight';
 import hljs from 'highlight.js';
 import mermaid from 'mermaid';
 import DOMPurify from 'dompurify';
+import yaml from 'js-yaml';
 import 'github-markdown-css/github-markdown-light.css';
 import 'highlight.js/styles/github.css';
 
@@ -22,6 +23,68 @@ export default class MarkdownRenderer {
   }
 
   /**
+   * Extract YAML front matter from markdown content
+   * @param {string} content - The markdown content
+   * @returns {Object} Object with frontMatter (parsed object or null) and content (remaining markdown)
+   */
+  extractFrontMatter(content) {
+    const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
+    const match = content.match(frontMatterRegex);
+
+    if (match) {
+      try {
+        const frontMatter = yaml.load(match[1]);
+        const markdownContent = match[2];
+        return { frontMatter, content: markdownContent };
+      } catch (error) {
+        console.error('Error parsing YAML front matter:', error);
+        return { frontMatter: null, content };
+      }
+    }
+
+    return { frontMatter: null, content };
+  }
+
+  /**
+   * Convert YAML front matter object to HTML table
+   * @param {Object} frontMatter - The parsed YAML front matter
+   * @returns {string} HTML table string
+   */
+  frontMatterToTable(frontMatter) {
+    if (!frontMatter || typeof frontMatter !== 'object') {
+      return '';
+    }
+
+    // Build header row with field names
+    let tableHtml = '<table>\n<thead>\n<tr>';
+    for (const key of Object.keys(frontMatter)) {
+      const escapedKey = this.escapeHtml(String(key));
+      tableHtml += `<th>${escapedKey}</th>`;
+    }
+    tableHtml += '</tr>\n</thead>\n<tbody>\n<tr>';
+
+    // Build data row with values
+    for (const value of Object.values(frontMatter)) {
+      const escapedValue = this.escapeHtml(String(value));
+      tableHtml += `<td>${escapedValue}</td>`;
+    }
+    tableHtml += '</tr>\n</tbody>\n</table>\n';
+
+    return tableHtml;
+  }
+
+  /**
+   * Escape HTML special characters
+   * @param {string} text - Text to escape
+   * @returns {string} Escaped text
+   */
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  /**
    * Render markdown content to a specified container
    * @param {string} markdownContent - The markdown text to render
    * @param {string} containerId - The ID of the container element (default: 'markdown-preview')
@@ -35,11 +98,20 @@ export default class MarkdownRenderer {
     }
 
     try {
+      // Extract YAML front matter
+      const { frontMatter, content } = this.extractFrontMatter(markdownContent);
+
       // Convert markdown to HTML
-      const htmlContent = marked.parse(markdownContent);
+      const htmlContent = marked.parse(content);
 
       // Sanitize HTML
-      const sanitizedHtml = DOMPurify.sanitize(htmlContent);
+      let sanitizedHtml = DOMPurify.sanitize(htmlContent);
+
+      // Prepend front matter table if it exists
+      if (frontMatter) {
+        const tableHtml = this.frontMatterToTable(frontMatter);
+        sanitizedHtml = tableHtml + sanitizedHtml;
+      }
 
       // Insert sanitized HTML into container
       container.innerHTML = sanitizedHtml;
