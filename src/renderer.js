@@ -154,8 +154,9 @@ export default class MarkdownRenderer {
       return '';
     }
 
-    // Build header row with field names
     let tableHtml = '<table>\n<thead>\n<tr>';
+
+    // Build header row with field names
     for (const key of Object.keys(frontMatter)) {
       const escapedKey = this.escapeHtml(String(key));
       tableHtml += `<th>${escapedKey}</th>`;
@@ -164,12 +165,96 @@ export default class MarkdownRenderer {
 
     // Build data row with values
     for (const value of Object.values(frontMatter)) {
-      const escapedValue = this.escapeHtml(String(value));
-      tableHtml += `<td>${escapedValue}</td>`;
+      tableHtml += `<td>${this.formatValue(value)}</td>`;
     }
     tableHtml += '</tr>\n</tbody>\n</table>\n';
 
     return tableHtml;
+  }
+
+  /**
+   * Format a value for display in front matter table
+   * @param {*} value - The value to format
+   * @returns {string} HTML string
+   */
+  formatValue(value) {
+    // Handle null/undefined
+    if (value == null) {
+      return '';
+    }
+
+    // Handle arrays of objects (like authors)
+    if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'object') {
+      return this.arrayOfObjectsToTable(value);
+    }
+
+    // Handle arrays of primitives
+    if (Array.isArray(value)) {
+      return value.map(v => this.escapeHtml(String(v))).join(', ');
+    }
+
+    // Handle objects
+    if (typeof value === 'object') {
+      return this.objectToList(value);
+    }
+
+    // Handle primitives
+    return this.escapeHtml(String(value));
+  }
+
+  /**
+   * Convert an array of objects to an HTML table
+   * @param {Array<Object>} array - Array of objects
+   * @returns {string} HTML table string
+   */
+  arrayOfObjectsToTable(array) {
+    if (!array || array.length === 0) {
+      return '';
+    }
+
+    // Get all unique keys from all objects
+    const keys = [...new Set(array.flatMap(obj => Object.keys(obj)))];
+
+    let html = '<table>\n<thead>\n<tr>';
+
+    // Table headers
+    for (const key of keys) {
+      html += `<th>${this.escapeHtml(key)}</th>`;
+    }
+    html += '</tr>\n</thead>\n<tbody>\n';
+
+    // Table rows
+    for (const obj of array) {
+      html += '<tr>';
+      for (const key of keys) {
+        const value = obj[key];
+        if (value == null) {
+          html += '<td></td>';
+        } else if (typeof value === 'object') {
+          html += `<td>${this.escapeHtml(JSON.stringify(value))}</td>`;
+        } else {
+          html += `<td>${this.escapeHtml(String(value))}</td>`;
+        }
+      }
+      html += '</tr>\n';
+    }
+
+    html += '</tbody>\n</table>';
+    return html;
+  }
+
+  /**
+   * Convert an object to an HTML list
+   * @param {Object} obj - Object to convert
+   * @returns {string} HTML list string
+   */
+  objectToList(obj) {
+    let html = '<ul>';
+    for (const [key, value] of Object.entries(obj)) {
+      html += `<li><strong>${this.escapeHtml(key)}:</strong> ${this.escapeHtml(String(value))}</li>`;
+    }
+    html += '</ul>';
+    return html;
   }
 
   /**
