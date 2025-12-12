@@ -4,8 +4,10 @@ import hljs from 'highlight.js';
 import mermaid from 'mermaid';
 import DOMPurify from 'dompurify';
 import yaml from 'js-yaml';
+import katex from 'katex';
 import 'github-markdown-css/github-markdown-light.css';
 import 'highlight.js/styles/github.css';
+import 'katex/dist/katex.min.css';
 
 export default class MarkdownRenderer {
   constructor() {
@@ -55,6 +57,57 @@ export default class MarkdownRenderer {
           },
           renderer(token) {
             return `<sup>${token.text}</sup>`;
+          }
+        },
+        // Add KaTeX support for inline and block math
+        {
+          name: 'mathBlock',
+          level: 'block',
+          start(src) { return src.indexOf('$$'); },
+          tokenizer(src) {
+            const match = src.match(/^\$\$\n?([\s\S]+?)\n?\$\$/);
+            if (match) {
+              return {
+                type: 'mathBlock',
+                raw: match[0],
+                text: match[1].trim()
+              };
+            }
+          },
+          renderer(token) {
+            try {
+              return katex.renderToString(token.text, {
+                displayMode: true,
+                throwOnError: false
+              });
+            } catch (error) {
+              return `<div class="katex-error">Error rendering math: ${error.message}</div>`;
+            }
+          }
+        },
+        {
+          name: 'mathInline',
+          level: 'inline',
+          start(src) { return src.indexOf('$'); },
+          tokenizer(src) {
+            const match = src.match(/^\$(?!\$)([^\$\n]+?)\$/);
+            if (match) {
+              return {
+                type: 'mathInline',
+                raw: match[0],
+                text: match[1]
+              };
+            }
+          },
+          renderer(token) {
+            try {
+              return katex.renderToString(token.text, {
+                displayMode: false,
+                throwOnError: false
+              });
+            } catch (error) {
+              return `<span class="katex-error">Error: ${error.message}</span>`;
+            }
           }
         }
       ]
